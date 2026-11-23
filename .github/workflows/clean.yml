@@ -23,17 +23,19 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Build Source if package.json Exists
+      - name: Build and Clean Source Waste
         run: |
           if [ -f package.json ]; then
-            npm install
+            npm install --legacy-peer-deps
             npm run build
+            rm -rf src node_modules package.json package-lock.json tsconfig.json vite.config.ts metadata.json .env.example .gitignore
             if [ -d dist ]; then
               cp -r dist/* .
+              rm -rf dist
             fi
           fi
 
-      - name: Remove Unwanted Files and Waste
+      - name: Remove Unwanted Files and Maps
         run: |
           rm -f robots.txt sitemap.xml
           find . -maxdepth 3 -name "*.map" -delete
@@ -48,11 +50,11 @@ jobs:
 
       - name: Minify JS and HTML
         run: |
-          find . -maxdepth 4 -type f -name "*.js" ! -path "./node_modules/*" | while read -r js_file; do
+          find . -maxdepth 4 -type f -name "*.js" | while read -r js_file; do
             npx terser "$js_file" --compress --mangle -o "$js_file"
           done
 
-          find . -maxdepth 4 -type f -name "*.html" ! -path "./node_modules/*" | while read -r html_file; do
+          find . -maxdepth 4 -type f -name "*.html" | while read -r html_file; do
             npx html-minifier@4.0.0 \
               --collapse-whitespace \
               --remove-comments \
@@ -72,6 +74,6 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "chore: clean and minify html/js"
+            git commit -m "chore: build, clean waste, and minify html/js"
             git push
           fi
