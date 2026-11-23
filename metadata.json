@@ -1,0 +1,6 @@
+{
+  "name": "Single-Goal Savings Tracker",
+  "description": "A minimalist black-and-white single-goal pocket change savings tracker in DH.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
